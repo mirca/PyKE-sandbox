@@ -1,10 +1,6 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-"""
-Systematics correction != Detrending
-"""
-
 class LightCurve(object):
     """
     Implements a basic time-series class for a generic lightcurve.
@@ -25,7 +21,9 @@ class LightCurve(object):
         """
         """
         if method == 'arclength':
-            return ArcLengthDetrender.detrend(self.time, self.flux, **kwargs)
+            return ArcLengthDetrender().detrend(self.time, self.flux, **kwargs)
+        else:
+            return FirstDifferenceDetrender().detrend(self.time, self.flux, **kwargs)
 
 class Detrender(ABC):
     """
@@ -40,8 +38,6 @@ class SystematicsCorrector(ABC):
     @abstractmethod
     def correct(**kwargs):
         """
-        kawrgs: not only light curve, but also physical parameters like centroind
-        positions
         """
         pass
 
@@ -57,7 +53,7 @@ class LinearDetrender(Detrender):
     """
     @staticmethod
     def detrend(time, flux):
-        return LightCurve()
+        pass
 
 class ArcLengthDetrender(Detrender):
     def detrend(time, flux):

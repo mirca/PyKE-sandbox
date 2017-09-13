@@ -1,12 +1,12 @@
 import warnings
 from abc import ABC, abstractmethod
 import numpy as np
-
 from astropy.io import fits
 from astropy.stats.funcs import median_absolute_deviation
 import scipy.ndimage
 
 from .lightcurve import LightCurve
+
 
 class TargetPixelFile(ABC):
     @abstractmethod
@@ -149,8 +149,9 @@ class KeplerTargetPixelFile(TargetPixelFile):
         y, x = np.mgrid[:img.shape[0], :img.shape[1]]
 
         for i in range(self.n_cadences):
-            xc[i] = (self.flux[i] * x).sum() / self.flux[i].sum()
-            yc[i] = (self.flux[i] * y).sum() / self.flux[i].sum()
+            total_flux = self.flux[i].sum()
+            xc[i] = (self.flux[i] * x).sum() / total_flux
+            yc[i] = (self.flux[i] * y).sum() / total_flux
 
         return xc, yc
 
@@ -166,37 +167,4 @@ class KeplerTargetPixelFile(TargetPixelFile):
         else:
             lc = LightCurve(flux=lc, time=self.time).detrend(method=method,
                                                  **kwargs)
-
         return lc
-
-
-"""
-Get TPF and LC objects from the archive
-Given a list of EPIC or KIC return TPFs
-
-Basics
-------
-
-LightCurve.from_epic(1231235, method='Vanderbug')
-LightCurve.from_kic()
-
-LightCurve.from_K2.from_epic
-
-LightCurve.to_astropy_table
-LightCurve.to_pandas
-
-Extensions
-----------
-class MASTArchive
-Channel number, ...
-
-COROT
-
-Priority
---------
-Get a TPF from MAST, create a light curve, use whatever method to detrend (sc) it.
-
-
-
-
-"""
